@@ -40,4 +40,25 @@ public class FriendshipService {
                 })
                 .collect(Collectors.toList());
     }
+
+    public List<UserDTO> getMutualFriends(Long userId1, Long userId2) {
+        List<Friendship> friendships1 = friendshipRepository.findByUserIdOrFriendId(userId1, userId1);
+        List<Friendship> friendships2 = friendshipRepository.findByUserIdOrFriendId(userId2, userId2);
+
+        List<User> friends1 = friendships1.stream()
+                .map(friendship -> friendship.getUser().getId() == userId1 ? friendship.getFriend() : friendship.getUser())
+                .collect(Collectors.toList());
+
+        List<User> friends2 = friendships2.stream()
+                .map(friendship -> friendship.getUser().getId() == userId2 ? friendship.getFriend() : friendship.getUser())
+                .collect(Collectors.toList());
+
+        List<User> mutualFriends = friends1.stream()
+                .filter(friends2::contains)
+                .collect(Collectors.toList());
+
+        return mutualFriends.stream()
+                .map(userService::convertToDTO)
+                .collect(Collectors.toList());
+    }
 }

@@ -23,4 +23,13 @@ public class SearchService {
     private UserDTO convertToDTO(User user) {
         return new UserDTO(user.getId(), user.getNickname(), user.getEmail());
     }
+
+    public List<UserDTO> searchUsersByMultipleCriteria(String nickname, String email) {
+        List<User> users = userRepository.findAll();
+        return users.stream()
+                .filter(user -> (nickname == null || user.getNickname().contains(nickname)) &&
+                        (email == null || user.getEmail().contains(email)))
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
 }

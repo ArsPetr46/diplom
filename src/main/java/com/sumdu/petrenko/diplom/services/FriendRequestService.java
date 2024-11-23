@@ -62,4 +62,22 @@ public class FriendRequestService {
             throw new IllegalArgumentException("Friend request not found");
         }
     }
+
+    public String getFriendshipStatus(Long userId1, Long userId2) {
+        Optional<FriendRequest> sentRequest = friendRequestRepository.findBySenderIdAndReceiverId(userId1, userId2);
+        Optional<FriendRequest> receivedRequest = friendRequestRepository.findBySenderIdAndReceiverId(userId2, userId1);
+
+        if (sentRequest.isPresent()) {
+            return "Pending";
+        } else if (receivedRequest.isPresent()) {
+            return "Received";
+        } else {
+            Optional<Friendship> friendship = friendshipRepository.findByUserIdAndFriendId(userId1, userId2);
+            if (friendship.isPresent()) {
+                return "Friends";
+            } else {
+                return "Not Friends";
+            }
+        }
+    }
 }
