@@ -3,6 +3,7 @@ package com.sumdu.petrenko.diplom.controllers;
 import com.sumdu.petrenko.diplom.dto.UserDTO;
 import com.sumdu.petrenko.diplom.models.User;
 import com.sumdu.petrenko.diplom.services.UserService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,13 +29,13 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> createUser(@RequestBody User user) {
+    public ResponseEntity<Void> createUser(@Valid @RequestBody User user) {
         userService.saveUser(user);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Void> updateUser(@PathVariable Long id, @RequestBody User userDetails) {
+    public ResponseEntity<Void> updateUser(@PathVariable Long id,@Valid @RequestBody User userDetails) {
         Optional<User> user = userService.getUserById(id);
         if (user.isPresent()) {
             User updatedUser = user.get();
