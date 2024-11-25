@@ -10,6 +10,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -42,13 +43,18 @@ public class UserControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
+    @BeforeEach
+    public void setUp() {
+        MockitoAnnotations.openMocks(this);
+    }
+
     static Stream<User> provideUsers() {
         return Stream.of(
-                new User(1L, "validUser1", "valid1@example.com", "Password1!", null, null, null, null),
-                new User(2L, "invalidUser@", "invalid@example.com", "Password1!", null, null, null, null),
-                new User(3L, "validUser2", "invalidEmail", "Password1!", null, null, null, null),
+                new User(1L, "validUser1", "valid1@example.com", "Password1", null, null, null, null),
+                new User(2L, "invalidUser@", "invalid@example.com", "Password1", null, null, null, null),
+                new User(3L, "validUser2", "invalidEmail", "Password1", null, null, null, null),
                 new User(4L, "validUser3", "valid3@example.com", "password", null, null, null, null),
-                new User(5L, "validUser4", "valid4@example.com", "Password1!", null, null, null, null)
+                new User(5L, "validUser4", "valid4@example.com", "Password1", null, null, null, null)
         );
     }
 
