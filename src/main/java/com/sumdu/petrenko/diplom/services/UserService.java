@@ -8,12 +8,15 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class UserService {
+    private final UserRepository userRepository;
+
     @Autowired
-    private UserRepository userRepository;
+    public UserService(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     public List<User> getAllUsers() {
         return userRepository.findAll();
@@ -21,14 +24,6 @@ public class UserService {
 
     public Optional<User> getUserById(Long id) {
         return userRepository.findById(id);
-    }
-
-    public Optional<User> getUserByNickname(String nickname) {
-        return userRepository.findByNickname(nickname);
-    }
-
-    public Optional<User> getUserByEmail(String email) {
-        return userRepository.findByEmail(email);
     }
 
     public User saveUser(User user) {
@@ -43,10 +38,10 @@ public class UserService {
         return new UserDTO(user.getId(), user.getNickname(), user.getEmail());
     }
 
-    public List<UserDTO> getAllUsersAsDTO() {
-        return userRepository.findAll().stream()
+    public Optional<List<UserDTO>> getAllUsersAsDTO() {
+        return Optional.of(userRepository.findAll().stream()
                 .map(this::convertToDTO)
-                .collect(Collectors.toList());
+                .toList());
     }
 
     public Optional<UserDTO> getUserByIdAsDTO(Long id) {

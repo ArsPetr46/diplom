@@ -1,39 +1,45 @@
 package com.sumdu.petrenko.diplom.models;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@AllArgsConstructor
-@NoArgsConstructor
+@NoArgsConstructor(force = true)
 @Data
 @Table(name = "friendships")
 public class Friendship {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    @Schema(description = "Unique ID of a Friendship between two Users",
+            examples = {"1", "100", "3197"}, requiredMode = Schema.RequiredMode.AUTO,
+            accessMode = Schema.AccessMode.READ_ONLY)
+    private long id = 0;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
+    @Schema(description = "The User who has a friend", requiredMode = Schema.RequiredMode.REQUIRED,
+            accessMode = Schema.AccessMode.READ_ONLY)
     private User user;
 
     @ManyToOne
     @JoinColumn(name = "friend_id")
+    @Schema(description = "The User who is a friend", requiredMode = Schema.RequiredMode.REQUIRED,
+            accessMode = Schema.AccessMode.READ_ONLY)
     private User friend;
 
-    @PrePersist
-    @PreUpdate
-    private void validateFriendship() {
+    public Friendship(User user, User friend) {
         if (user.getId() == friend.getId()) {
             throw new IllegalArgumentException("User cannot be friends with themselves.");
         }
 
-        if (user.getId() > friend.getId()) {
-            User temp = user;
-            user = friend;
-            friend = temp;
+        if (user.getId() < friend.getId()) {
+            this.user = friend;
+            this.friend = user;
+        } else {
+            this.user = user;
+            this.friend = friend;
         }
     }
 }

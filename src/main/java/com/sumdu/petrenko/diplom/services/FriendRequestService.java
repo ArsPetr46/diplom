@@ -12,11 +12,14 @@ import java.util.Optional;
 
 @Service
 public class FriendRequestService {
-    @Autowired
-    private FriendRequestRepository friendRequestRepository;
+    private final FriendRequestRepository friendRequestRepository;
+    private final FriendshipRepository friendshipRepository;
 
     @Autowired
-    private FriendshipRepository friendshipRepository;
+    public FriendRequestService(FriendRequestRepository friendRequestRepository, FriendshipRepository friendshipRepository) {
+        this.friendRequestRepository = friendRequestRepository;
+        this.friendshipRepository = friendshipRepository;
+    }
 
     public Optional<FriendRequest> getFriendRequestById(Long id) {
         return friendRequestRepository.findById(id);
@@ -44,9 +47,10 @@ public class FriendRequestService {
         if (friendRequestOpt.isPresent()) {
             FriendRequest friendRequest = friendRequestOpt.get();
 
-            Friendship friendship = new Friendship();
-            friendship.setUser(friendRequest.getSender());
-            friendship.setFriend(friendRequest.getReceiver());
+            Friendship friendship = new Friendship(
+                    friendRequest.getSender(),
+                    friendRequest.getReceiver()
+            );
 
             friendshipRepository.save(friendship);
             friendRequestRepository.deleteById(requestId);

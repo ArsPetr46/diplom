@@ -9,15 +9,17 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class FriendshipService {
-    @Autowired
-    private FriendshipRepository friendshipRepository;
+    private final FriendshipRepository friendshipRepository;
+    private final UserService userService;
 
     @Autowired
-    private UserService userService;
+    public FriendshipService(FriendshipRepository friendshipRepository, UserService userService) {
+        this.friendshipRepository = friendshipRepository;
+        this.userService = userService;
+    }
 
     public Optional<Friendship> getFriendshipById(Long id) {
         return friendshipRepository.findById(id);
@@ -38,7 +40,7 @@ public class FriendshipService {
                     User friend = friendship.getUser().getId() == userId ? friendship.getFriend() : friendship.getUser();
                     return userService.convertToDTO(friend);
                 })
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public List<UserDTO> getMutualFriends(Long userId1, Long userId2) {
@@ -47,18 +49,18 @@ public class FriendshipService {
 
         List<User> friends1 = friendships1.stream()
                 .map(friendship -> friendship.getUser().getId() == userId1 ? friendship.getFriend() : friendship.getUser())
-                .collect(Collectors.toList());
+                .toList();
 
         List<User> friends2 = friendships2.stream()
                 .map(friendship -> friendship.getUser().getId() == userId2 ? friendship.getFriend() : friendship.getUser())
-                .collect(Collectors.toList());
+                .toList();
 
         List<User> mutualFriends = friends1.stream()
                 .filter(friends2::contains)
-                .collect(Collectors.toList());
+                .toList();
 
         return mutualFriends.stream()
                 .map(userService::convertToDTO)
-                .collect(Collectors.toList());
+                .toList();
     }
 }

@@ -34,15 +34,17 @@ public class UserServiceRepositoryComponentTest {
 
     @Test
     public void testRetrieveAllUsers() {
-        User user1 = new User();
-        user1.setNickname("testUser1");
-        user1.setEmail("test1@example.com");
-        user1.setPassword("Password1");
+        User user1 = new User(
+                "testUser1",
+                "test1@example.com",
+                "Password1"
+        );
 
-        User user2 = new User();
-        user2.setNickname("testUser2");
-        user2.setEmail("test2@example.com");
-        user2.setPassword("Password2");
+        User user2 = new User(
+                "testUser2",
+                "test2@example.com",
+                "Password2"
+        );
 
         userService.saveUser(user1);
         userService.saveUser(user2);
@@ -64,14 +66,16 @@ public class UserServiceRepositoryComponentTest {
 
     @Test
     public void testRetrieveUserByNickname() {
-        User user = new User();
-        user.setNickname("testUser1");
-        user.setEmail("test@example.com");
-        user.setPassword("Password1");
+        User user = new User(
+                "testUser1",
+                "test1@example.com",
+                "Password1"
+        );
 
         userService.saveUser(user);
 
         Optional<User> retrievedUser = userService.getUserByNickname("testUser1");
+
         assertThat(retrievedUser).isPresent();
         assertThat(retrievedUser.get().getNickname()).isEqualTo("testUser1");
         assertThat(retrievedUser.get().getEmail()).isEqualTo("test@example.com");
@@ -80,30 +84,16 @@ public class UserServiceRepositoryComponentTest {
 
     @Test
     public void testRetrieveUserByEmail() {
-        User user = new User();
-        user.setNickname("testUser1");
-        user.setEmail("test@example.com");
-        user.setPassword("Password1");
+        User user = new User(
+                "testUser1",
+                "test1@example.com",
+                "Password1"
+        );
 
         userService.saveUser(user);
 
         Optional<User> retrievedUser = userService.getUserByEmail("test@example.com");
-        assertThat(retrievedUser).isPresent();
-        assertThat(retrievedUser.get().getNickname()).isEqualTo("testUser1");
-        assertThat(retrievedUser.get().getEmail()).isEqualTo("test@example.com");
-        assertThat(retrievedUser.get().getPassword()).isEqualTo("Password1");
-    }
 
-    @Test
-    public void testSaveAndRetrieveUser() {
-        User user = new User();
-        user.setNickname("testUser1");
-        user.setEmail("test@example.com");
-        user.setPassword("Password1");
-
-        userService.saveUser(user);
-
-        Optional<User> retrievedUser = userService.getUserByNickname("testUser1");
         assertThat(retrievedUser).isPresent();
         assertThat(retrievedUser.get().getNickname()).isEqualTo("testUser1");
         assertThat(retrievedUser.get().getEmail()).isEqualTo("test@example.com");
@@ -112,14 +102,16 @@ public class UserServiceRepositoryComponentTest {
 
     @Test
     public void testSaveUserWithMaxLengthFields() {
-        User user = new User();
-        user.setNickname("a".repeat(30));
-        user.setEmail("test".repeat(15) + "@example.com");
-        user.setPassword("password".repeat(3) + "1".repeat(6));
+        User user = new User(
+                "a".repeat(30),
+                "test".repeat(15) + "@example.com",
+                "password".repeat(3) + "1".repeat(6)
+        );
 
         userService.saveUser(user);
 
         Optional<User> retrievedUser = userService.getUserByNickname("a".repeat(30));
+
         assertThat(retrievedUser).isPresent();
         assertThat(retrievedUser.get().getNickname()).isEqualTo("a".repeat(30));
         assertThat(retrievedUser.get().getEmail()).isEqualTo("test".repeat(15) + "@example.com");
@@ -128,10 +120,7 @@ public class UserServiceRepositoryComponentTest {
 
     @Test
     public void testSaveUserWithEmptyFields() {
-        User user = new User();
-        user.setNickname("");
-        user.setEmail("");
-        user.setPassword("");
+        User user = new User("", "", "");
 
         assertThrows(ConstraintViolationException.class, () -> {
             userService.saveUser(user);
@@ -140,10 +129,7 @@ public class UserServiceRepositoryComponentTest {
 
     @Test
     public void testSaveUserWithNullFields() {
-        User user = new User();
-        user.setNickname(null);
-        user.setEmail(null);
-        user.setPassword(null);
+        User user = new User(null, null, null);
 
         assertThrows(DataIntegrityViolationException.class, () -> {
             userService.saveUser(user);
@@ -152,10 +138,11 @@ public class UserServiceRepositoryComponentTest {
 
     @Test
     public void testSaveUserWithInvalidNickname() {
-        User user = new User();
-        user.setNickname("testUser***");
-        user.setEmail("test@example.com");
-        user.setPassword("Password1");
+        User user = new User(
+                "testUser***",
+                "test1@example.com",
+                "Password1"
+        );
 
         assertThrows(ConstraintViolationException.class, () -> {
             userService.saveUser(user);
@@ -164,10 +151,11 @@ public class UserServiceRepositoryComponentTest {
 
     @Test
     public void testSaveUserWithInvalidEmailFormat() {
-        User user = new User();
-        user.setNickname("testUser");
-        user.setEmail("invalidEmail");
-        user.setPassword("Password1");
+        User user = new User(
+                "testUser",
+                "invalidemail",
+                "Password1"
+        );
 
         assertThrows(ConstraintViolationException.class, () -> {
             userService.saveUser(user);
@@ -176,10 +164,11 @@ public class UserServiceRepositoryComponentTest {
 
     @Test
     public void testSaveUserWithInvalidPassword() {
-        User user = new User();
-        user.setNickname("testUser");
-        user.setEmail("test@example.com");
-        user.setPassword("password&&");
+        User user = new User(
+                "testUser",
+                "test1@example.com",
+                "password&&&&"
+        );
 
         assertThrows(ConstraintViolationException.class, () -> {
             userService.saveUser(user);
@@ -188,17 +177,19 @@ public class UserServiceRepositoryComponentTest {
 
     @Test
     public void testDuplicateUser() {
-        User user1 = new User();
-        user1.setNickname("testUser");
-        user1.setEmail("test@example.com");
-        user1.setPassword("Password1");
+        User user1 = new User(
+                "testUser",
+                "test1@example.com",
+                "Password1"
+        );
 
         userService.saveUser(user1);
 
-        User user2 = new User();
-        user2.setNickname("testUser");
-        user2.setEmail("test@example.com");
-        user2.setPassword("Password2");
+        User user2 = new User(
+                "testUser",
+                "test1@example.com",
+                "Password1"
+        );
 
         assertThrows(DataIntegrityViolationException.class, () -> {
             userService.saveUser(user2);
@@ -207,17 +198,28 @@ public class UserServiceRepositoryComponentTest {
 
     @Test
     public void testUpdateUser() {
-        User user = new User();
-        user.setNickname("testUser1");
-        user.setEmail("test@example.com");
-        user.setPassword("Password1");
+        User user = new User(
+                "testUser1",
+                "test1@example.com",
+                "Password1"
+        );
 
         userService.saveUser(user);
 
-        user.setEmail("updated@example.com");
+        Optional<User> savedUser = userService.getUserByNickname("testUser1");
+        assertThat(savedUser).isPresent();
+
+        User updatedUser = new User(
+                savedUser.get().getId(),
+                "testUser1",
+                "updated@example.com",
+                "Password1"
+        );
+
         userService.saveUser(user);
 
         Optional<User> retrievedUser = userService.getUserByNickname("testUser1");
+
         assertThat(retrievedUser).isPresent();
         assertThat(retrievedUser.get().getNickname()).isEqualTo("testUser1");
         assertThat(retrievedUser.get().getEmail()).isEqualTo("updated@example.com");
@@ -226,13 +228,16 @@ public class UserServiceRepositoryComponentTest {
 
     @Test
     public void testDeleteUser() {
-        User user = new User();
-        user.setNickname("testUser1");
-        user.setEmail("test@example.com");
-        user.setPassword("Password1");
+        User user = new User(
+                "testUser",
+                "test1@example.com",
+                "Password1"
+        );
 
-        userService.saveUser(user);
-        userService.deleteUser(user.getId());
+        Optional<User> savedUser = userService.getUserByNickname("testUser");
+        assertThat(savedUser).isPresent();
+
+        userService.deleteUser(savedUser.get().getId());
 
         Optional<User> retrievedUser = userService.getUserById(user.getId());
         assertThat(retrievedUser).isNotPresent();

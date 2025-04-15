@@ -1,30 +1,33 @@
-# Web-Based Messaging System
+# Вебсистема обміну повідомленнями
 
-This project is a web-based messaging system, similar to the web versions of Discord or Telegram. Currently, it only contains the backend part, which connects to a local server. In the future, the server will be hosted online. The frontend will be developed using React, and the necessary JavaScript files will be added later.
+Цей проєкт є веб-заснованою системою обміну повідомленнями, подібною до вебверсії Discord або Telegram. Наразі він містить лише серверну частину, яка підключається до локального сервера. У майбутньому сервер буде розміщено онлайн. Клієнтська частина буде розроблена з використанням React, і необхідні JavaScript-файли будуть додані пізніше.
 
-## Technologies Used
+## Використані технології
 
 - **Java**: 23
 - **Spring Boot**: 3.3.5
 - **Maven**: 4.0.0
+- **Postgresql**: 13
 
-## Prerequisites
+## Необхідні умови
 
-Make sure you have the following installed on your system:
+Для роботи із проєктом вам знадобляться:
 
-- Java 23
-- Maven 4.0.0
+- Java SDK 23
+- Сучасна IDE для розробки на мові Java (наприклад, IntelliJ IDEA)
+- В IDE необхідно встановити плагін для роботи з Lombok
+- Maven 4.0.0 або версія вбудована в IDE
 
-## Getting Started
+## Початок роботи
 
-1. **Clone the repository:**
+1. **Клонування репозиторію:**
 
     ```sh
     git clone https://github.com/ArsPetr46/diplom.git
     cd diplom
     ```
 
-2. **Add database credentials as environmental properties in your IDE or OS. You should set these properties:**
+2. **Необхідно бути в тій же локальній мережі, де запущена БД. Для входу потрібно заповнити наступні системні змінні (значення можна дізнатися в інших розробників):**
 
    ```ini
     DB_URL
@@ -32,16 +35,33 @@ Make sure you have the following installed on your system:
     DB_PASSWORD
     ```
 
-3. **Build the project:**
+3. **Проєкт містить Pom файл із всіма необхідними залежностями, тому для завантаження можна використати команду:**
+
+   ```sh
+    ./mvnw dependency:resolve
+    ```
+   Або одразу для завантаження та компіляції проєкту:
 
     ```sh
     ./mvnw clean install
     ```
 
-4. **Run the application:**
+4. **Для подальших запусків додатка можна використовувати:**
 
     ```sh
     ./mvnw spring-boot:run
     ```
 
-The backend server will start and connect to the local server. Once the frontend is developed, it will be integrated into this project.
+## Базові команди
+
+Цей проєкт є реалізацією REST API додатку. Для прикладу описано наступний екндпоінт:
+
+Ендпоінт `users` дозволяє виконувати CRUD-операції з користувачами:
+
+- **GET /users**: Отримати список усіх користувачів.
+- **GET /users/{id}**: Отримати інформацію про користувача за його ID.
+- **POST /users**: Створити нового користувача.
+- **PUT /users/{id}**: Оновити дані існуючого користувача за його ID.
+- **DELETE /users/{id}**: Видалити користувача за його ID.
+
+Більш детальну документацію всіх ендпоінтів можна переглянути в Swagger UI, доступному за адресою `http://localhost:8080/swagger-ui/index.html` або `http://localhost:8080/redoc.html`. Для цього потрібно запустити сервер, як описано вище.

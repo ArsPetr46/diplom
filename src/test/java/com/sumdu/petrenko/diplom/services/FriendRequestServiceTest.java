@@ -90,10 +90,7 @@ public class FriendRequestServiceTest {
     @Test
     public void testAcceptFriendRequest_Success() {
         Long requestId = 1L;
-        FriendRequest friendRequest = new FriendRequest();
-        friendRequest.setId(requestId);
-        friendRequest.setSender(new User());
-        friendRequest.setReceiver(new User());
+        FriendRequest friendRequest = new FriendRequest(new User(), new User());
 
         when(friendRequestRepository.findById(requestId)).thenReturn(Optional.of(friendRequest));
 

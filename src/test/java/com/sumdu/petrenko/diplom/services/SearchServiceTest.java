@@ -32,9 +32,12 @@ public class SearchServiceTest {
     public void testSearchUsersByMultipleCriteria() {
         String nickname = "john";
         String email = "john@example.com";
-        User user = new User();
-        user.setNickname(nickname);
-        user.setEmail(email);
+
+        User user = new User(
+                nickname,
+                email,
+                "Password1"
+        );
 
         when(userRepository.findAll()).thenReturn(Arrays.asList(user));
 
@@ -48,9 +51,12 @@ public class SearchServiceTest {
     @Test
     public void testSearchUsersByMultipleCriteria_NicknameOnly() {
         String nickname = "john";
-        User user = new User();
-        user.setNickname(nickname);
-        user.setEmail("john@example.com");
+
+        User user = new User(
+                nickname,
+                "john@example.com",
+                "Password1"
+        );
 
         when(userRepository.findAll()).thenReturn(Arrays.asList(user));
 
@@ -63,9 +69,12 @@ public class SearchServiceTest {
     @Test
     public void testSearchUsersByMultipleCriteria_EmailOnly() {
         String email = "john@example.com";
-        User user = new User();
-        user.setNickname("john");
-        user.setEmail(email);
+
+        User user = new User(
+                "john",
+                email,
+                "Password1"
+        );
 
         when(userRepository.findAll()).thenReturn(Arrays.asList(user));
 

@@ -7,17 +7,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class SearchService {
+    private final UserRepository userRepository;
+
     @Autowired
-    private UserRepository userRepository;
+    public SearchService(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     public List<UserDTO> searchUsersByNickname(String nickname) {
         return userRepository.findByNicknameContainingIgnoreCase(nickname).stream()
                 .map(this::convertToDTO)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     private UserDTO convertToDTO(User user) {
@@ -30,6 +33,6 @@ public class SearchService {
                 .filter(user -> (nickname == null || user.getNickname().contains(nickname)) &&
                         (email == null || user.getEmail().contains(email)))
                 .map(this::convertToDTO)
-                .collect(Collectors.toList());
+                .toList();
     }
 }
