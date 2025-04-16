@@ -2,7 +2,7 @@ name: Generate & Deploy Javadoc
 
 on:
   push:
-    branches: [main]
+    branches: [master]
 
 jobs:
   javadoc:
@@ -14,12 +14,13 @@ jobs:
         uses: actions/setup-java@v3
         with:
           java-version: '23'
+          distribution: 'temurin'
 
       - name: Generate Javadoc
-        run: mvn javadoc:javadoc
+        run: mvn javadoc:javadoc -DoutputDirectory=./documentation
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./target/site/apidocs
+          publish_dir: ./documentation
