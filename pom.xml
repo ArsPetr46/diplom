@@ -120,6 +120,7 @@
 				</executions>
 				<configuration>
 					<source>23</source>
+					<outputDirectory>./documentation</outputDirectory>
 				</configuration>
 			</plugin>
 		</plugins>
