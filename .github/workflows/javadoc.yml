@@ -23,9 +23,10 @@ jobs:
       - name: Generate Javadoc
         run: mvn javadoc:javadoc
 
-      - name: Create .nojekyll file
+      - name: Reorganize files and create .nojekyll
         run: |
-          touch ./documentation/.nojekyll
+          mv ./documentation/apidocs/* ./documentation/
+          rmdir ./documentation/apidocs
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
