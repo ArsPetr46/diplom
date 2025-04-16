@@ -4,6 +4,10 @@ on:
   push:
     branches: [master]
 
+permissions:
+  contents: write
+  pages: write
+
 jobs:
   javadoc:
     runs-on: ubuntu-latest
