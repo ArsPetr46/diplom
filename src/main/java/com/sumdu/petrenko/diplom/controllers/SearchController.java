@@ -16,17 +16,37 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/**
+ * Контролер для обробки запитів, пов'язаних з пошуком користувачів.
+ * <p>
+ * Цей контролер надає API для пошуку користувачів за їхніми нікнеймами.
+ * </p>
+ */
 @RestController
 @RequestMapping("/search")
 @Tag(name = "Search", description = "Operations related to searching users")
 public class SearchController {
+    /**
+     * Сервіс для роботи з пошуком користувачів.
+     */
     private final SearchService searchService;
 
+    /**
+     * Конструктор контролера пошуку.
+     *
+     * @param searchService сервіс для роботи з пошуком користувачів
+     */
     @Autowired
     public SearchController(SearchService searchService) {
         this.searchService = searchService;
     }
 
+    /**
+     * Отримати список користувачів за частковим збігом нікнейму.
+     *
+     * @param nickname частина нікнейму для пошуку
+     * @return список користувачів, які відповідають запиту
+     */
     @GetMapping("/users")
     @Operation(
             summary = "Search users by nickname",

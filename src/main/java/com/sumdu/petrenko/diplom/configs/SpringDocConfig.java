@@ -12,9 +12,21 @@ import org.springframework.context.annotation.Configuration;
 
 import java.util.List;
 
+/**
+ * Конфігурація SpringDoc для генерації OpenAPI документації.
+ * <p>
+ * Цей клас налаштовує OpenAPI документацію для API додатку, включаючи інформацію про версію,
+ * контактні дані, ліцензію, зовнішню документацію та схеми безпеки.
+ * </p>
+ */
 @Configuration
 public class SpringDocConfig {
 
+    /**
+     * Налаштування OpenAPI документації.
+     *
+     * @return об'єкт OpenAPI з налаштуваннями документації
+     */
     @Bean
     public OpenAPI customOpenAPI() {
         return new OpenAPI()

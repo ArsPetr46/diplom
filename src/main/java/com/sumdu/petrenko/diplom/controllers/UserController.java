@@ -21,17 +21,36 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Контролер для обробки запитів, пов'язаних з користувачами.
+ * <p>
+ * Цей контролер надає API для створення, отримання, оновлення та видалення користувачів.
+ * </p>
+ */
 @RestController
 @RequestMapping("/users")
 @Tag(name = "Users", description = "Operations related to users")
 public class UserController {
+    /**
+     * Сервіс для роботи з користувачами.
+     */
     private final UserService userService;
 
+    /**
+     * Конструктор контролера користувачів.
+     *
+     * @param userService сервіс для роботи з користувачами
+     */
     @Autowired
     public UserController(UserService userService) {
         this.userService = userService;
     }
 
+    /**
+     * Отримати список всіх користувачів.
+     *
+     * @return список користувачів
+     */
     @GetMapping
     @Operation(
             summary = "Get all users",
@@ -51,6 +70,12 @@ public class UserController {
 
     }
 
+    /**
+     * Отримати користувача за його id.
+     *
+     * @param id ід користувача, для якого потрібно отримати дані
+     * @return дані користувача
+     */
     @GetMapping("/{id}")
     @Operation(
             summary = "Get user by ID",
@@ -74,6 +99,12 @@ public class UserController {
 
     }
 
+    /**
+     * Створити нового користувача.
+     *
+     * @param user об'єкт користувача, що містить деталі нового користувача
+     * @return дані користувача
+     */
     @PostMapping(consumes = "application/json", produces = "application/json")
     @Operation(
             summary = "Create a new user",
@@ -89,6 +120,13 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.CREATED).body(userService.saveUser(user));
     }
 
+    /**
+     * Оновити існуючого користувача.
+     *
+     * @param id         ід користувача, якого потрібно оновити
+     * @param userDetails об'єкт користувача з новими даними
+     * @return статус оновлення
+     */
     @PutMapping("/{id}")
     @Operation(
             summary = "Update an existing user",
@@ -125,6 +163,12 @@ public class UserController {
         }
     }
 
+    /**
+     * Видалити користувача за його id.
+     *
+     * @param id ід користувача, якого потрібно видалити
+     * @return статус видалення
+     */
     @DeleteMapping("/{id}")
     @Operation(
             summary = "Delete a user by ID",

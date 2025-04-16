@@ -10,37 +10,89 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Сервіс для роботи з запитами на дружбу.
+ * <p>
+ * Цей клас надає методи для обробки запитів на дружбу, включаючи їх створення, прийняття та скасування.
+ * </p>
+ */
 @Service
 public class FriendRequestService {
+    /**
+     * Репозиторій для роботи з запитами на дружбу.
+     */
     private final FriendRequestRepository friendRequestRepository;
+    /**
+     * Репозиторій для роботи з дружбами.
+     */
     private final FriendshipRepository friendshipRepository;
 
+    /**
+     * Конструктор сервісу запитів на дружбу.
+     *
+     * @param friendRequestRepository репозиторій для роботи з запитами на дружбу
+     * @param friendshipRepository    репозиторій для роботи з дружбами
+     */
     @Autowired
     public FriendRequestService(FriendRequestRepository friendRequestRepository, FriendshipRepository friendshipRepository) {
         this.friendRequestRepository = friendRequestRepository;
         this.friendshipRepository = friendshipRepository;
     }
 
+    /**
+     * Отримати запит на дружбу за його id.
+     *
+     * @param id ід запиту на дружбу
+     * @return запит на дружбу
+     */
     public Optional<FriendRequest> getFriendRequestById(Long id) {
         return friendRequestRepository.findById(id);
     }
 
+    /**
+     * Отримати всі запити на дружбу, відправлені користувачем.
+     *
+     * @param senderId ід відправника
+     * @return список запитів на дружбу
+     */
     public List<FriendRequest> getFriendRequestsBySenderId(Long senderId) {
         return friendRequestRepository.findBySenderId(senderId);
     }
 
+    /**
+     * Отримати всі запити на дружбу, отримані користувачем.
+     *
+     * @param receiverId ід отримувача
+     * @return список запитів на дружбу
+     */
     public List<FriendRequest> getFriendRequestsByReceiverId(Long receiverId) {
         return friendRequestRepository.findByReceiverId(receiverId);
     }
 
+    /**
+     * Зберегти запит на дружбу.
+     *
+     * @param friendRequest запит на дружбу
+     * @return збережений запит на дружбу
+     */
     public FriendRequest saveFriendRequest(FriendRequest friendRequest) {
         return friendRequestRepository.save(friendRequest);
     }
 
+    /**
+     * Видалити запит на дружбу за його id.
+     *
+     * @param id ід запиту на дружбу
+     */
     public void deleteFriendRequest(Long id) {
         friendRequestRepository.deleteById(id);
     }
 
+    /**
+     * Прийняти запит на дружбу.
+     *
+     * @param requestId ід запиту на дружбу
+     */
     public void acceptFriendRequest(Long requestId) {
         Optional<FriendRequest> friendRequestOpt = friendRequestRepository.findById(requestId);
 
@@ -59,6 +111,11 @@ public class FriendRequestService {
         }
     }
 
+    /**
+     * Відхилити запит на дружбу.
+     *
+     * @param requestId ід запиту на дружбу
+     */
     public void cancelFriendRequest(Long requestId) {
         if (friendRequestRepository.existsById(requestId)) {
             friendRequestRepository.deleteById(requestId);
@@ -67,6 +124,13 @@ public class FriendRequestService {
         }
     }
 
+    /**
+     * Отримати статус дружби між двома користувачами.
+     *
+     * @param userId1 ід першого користувача
+     * @param userId2 ід другого користувача
+     * @return статус дружби
+     */
     public String getFriendshipStatus(Long userId1, Long userId2) {
         Optional<FriendRequest> sentRequest = friendRequestRepository.findBySenderIdAndReceiverId(userId1, userId2);
         Optional<FriendRequest> receivedRequest = friendRequestRepository.findBySenderIdAndReceiverId(userId2, userId1);

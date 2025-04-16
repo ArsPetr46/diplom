@@ -18,17 +18,37 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Контролер для обробки запитів, пов'язаних з дружбами.
+ * <p>
+ * Цей контролер надає API для створення, отримання та видалення дружб.
+ * </p>
+ */
 @RestController
 @RequestMapping("/friendships")
 @Tag(name = "Friendships", description = "Operations related to friendships")
 public class FriendshipController {
+    /**
+     * Сервіс для роботи з дружбами.
+     */
     private final FriendshipService friendshipService;
 
+    /**
+     * Конструктор контролера дружб.
+     *
+     * @param friendshipService сервіс для роботи з дружбами
+     */
     @Autowired
     public FriendshipController(FriendshipService friendshipService) {
         this.friendshipService = friendshipService;
     }
 
+    /**
+     * Отримати запис про дружбу за його id.
+     *
+     * @param id ід користувача, для якого потрібно отримати дружби
+     * @return список дружб
+     */
     @GetMapping("/{id}")
     @Operation(
             summary = "Get friendship by ID",
@@ -48,6 +68,12 @@ public class FriendshipController {
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
+    /**
+     * Отримати список друзів для конкретного користувача.
+     *
+     * @param userId ід користувача, для якого потрібно отримати друзів
+     * @return список друзів
+     */
     @GetMapping("/user/{userId}")
     @Operation(
             summary = "Get friends of user",
@@ -70,6 +96,12 @@ public class FriendshipController {
         return new ResponseEntity<>(friends, HttpStatus.OK);
     }
 
+    /**
+     * Створити нову дружбу.
+     *
+     * @param friendship об'єкт дружби, що містить деталі дружби
+     * @return список дружб
+     */
     @PostMapping
     @Operation(
             summary = "Create a new friendship",
@@ -86,6 +118,12 @@ public class FriendshipController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
+    /**
+     * Видалити дружбу за її id.
+     *
+     * @param id ід дружби, яку потрібно видалити
+     * @return статус видалення
+     */
     @DeleteMapping("/{id}")
     @Operation(
             summary = "Delete a friendship by ID",

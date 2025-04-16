@@ -10,29 +10,70 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Сервіс для роботи з дружбами.
+ * <p>
+ * Цей клас надає методи для обробки дружб, включаючи їх створення, видалення та отримання списків друзів.
+ * </p>
+ */
 @Service
 public class FriendshipService {
+    /**
+     * Репозиторій для роботи з дружбами.
+     */
     private final FriendshipRepository friendshipRepository;
+    /**
+     * Сервіс для роботи з користувачами.
+     */
     private final UserService userService;
 
+    /**
+     * Конструктор сервісу дружб.
+     *
+     * @param friendshipRepository репозиторій для роботи з дружбами
+     * @param userService          сервіс для роботи з користувачами
+     */
     @Autowired
     public FriendshipService(FriendshipRepository friendshipRepository, UserService userService) {
         this.friendshipRepository = friendshipRepository;
         this.userService = userService;
     }
 
+    /**
+     * Отримати дружбу за її id.
+     *
+     * @param id ід дружби
+     * @return дружба
+     */
     public Optional<Friendship> getFriendshipById(Long id) {
         return friendshipRepository.findById(id);
     }
 
+    /**
+     * Зберегти дружбу.
+     *
+     * @param friendship дружба
+     * @return збережена дружба
+     */
     public Friendship saveFriendship(Friendship friendship) {
         return friendshipRepository.save(friendship);
     }
 
+    /**
+     * Видалити дружбу за її id.
+     *
+     * @param id ід дружби
+     */
     public void deleteFriendship(Long id) {
         friendshipRepository.deleteById(id);
     }
 
+    /**
+     * Отримати список друзів для конкретного користувача.
+     *
+     * @param userId ід користувача
+     * @return список друзів
+     */
     public List<UserDTO> getFriendsOfUser(Long userId) {
         List<Friendship> friendships = friendshipRepository.findByUserIdOrFriendId(userId, userId);
         return friendships.stream()
@@ -43,6 +84,13 @@ public class FriendshipService {
                 .toList();
     }
 
+    /**
+     * Отримати список спільних друзів для конкретного користувача.
+     *
+     * @param userId1 ід першого користувача
+     * @param userId2 ід другого користувача
+     * @return список спільних друзів
+     */
     public List<UserDTO> getMutualFriends(Long userId1, Long userId2) {
         List<Friendship> friendships1 = friendshipRepository.findByUserIdOrFriendId(userId1, userId1);
         List<Friendship> friendships2 = friendshipRepository.findByUserIdOrFriendId(userId2, userId2);

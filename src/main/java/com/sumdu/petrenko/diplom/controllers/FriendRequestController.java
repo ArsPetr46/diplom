@@ -17,17 +17,37 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Контролер для обробки запитів, пов'язаних з дружніми запитами.
+ * <p>
+ * Цей контролер надає API для створення, отримання та видалення дружніх запитів.
+ * </p>
+ */
 @RestController
 @RequestMapping("/friendrequests")
 @Tag(name = "FriendRequests", description = "Operations related to friend requests")
 public class FriendRequestController {
+    /**
+     * Сервіс для роботи з дружніми запитами.
+     */
     private final FriendRequestService friendRequestService;
 
+    /**
+     * Конструктор контролера дружніх запитів.
+     *
+     * @param friendRequestService сервіс для роботи з дружніми запитами
+     */
     @Autowired
     public FriendRequestController(FriendRequestService friendRequestService) {
         this.friendRequestService = friendRequestService;
     }
 
+    /**
+     * Отримати список всіх дружніх запитів пов'язаних з певним id.
+     *
+     * @param id ід користувача, для якого потрібно отримати дружні запити
+     * @return список дружніх запитів
+     */
     @GetMapping("/{id}")
     @Operation(
             summary = "Get friend request by ID",
@@ -47,6 +67,12 @@ public class FriendRequestController {
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
+    /**
+     * Отримати список всіх дружніх запитів, де користувач з певним id є відправником.
+     *
+     * @param senderId ід користувача, який надіслав дружній запит
+     * @return список дружніх запитів
+     */
     @GetMapping("/sender/{senderId}")
     @Operation(
             summary = "Get friend requests by sender ID",
@@ -69,6 +95,12 @@ public class FriendRequestController {
         return new ResponseEntity<>(friendRequests, HttpStatus.OK);
     }
 
+    /**
+     * Отримати список всіх дружніх запитів, де користувач з певним id є отримувачем.
+     *
+     * @param receiverId ід користувача, який отримав дружній запит
+     * @return список дружніх запитів
+     */
     @GetMapping("/receiver/{receiverId}")
     @Operation(
             summary = "Get friend requests by receiver ID",
@@ -91,6 +123,12 @@ public class FriendRequestController {
         return new ResponseEntity<>(friendRequests, HttpStatus.OK);
     }
 
+    /**
+     * Створити новий дружній запит.
+     *
+     * @param friendRequest об'єкт дружнього запиту, що містить дані для створення нового запиту
+     * @return список дружніх запитів
+     */
     @PostMapping
     @Operation(
             summary = "Create a new friend request",
@@ -107,6 +145,12 @@ public class FriendRequestController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
+    /**
+     * Видалити дружній запит за ID.
+     *
+     * @param id ід дружнього запиту, який потрібно видалити
+     * @return статус видалення
+     */
     @DeleteMapping("/{id}")
     @Operation(
             summary = "Delete a friend request by ID",
