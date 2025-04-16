@@ -107,39 +107,20 @@
 	<build>
 		<plugins>
 			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-			</plugin>
-			<plugin>
-				<groupId>io.github.phillipuniverse</groupId>
-				<artifactId>githook-maven-plugin</artifactId>
-				<version>1.0.5</version>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>3.11.2</version>
 				<executions>
 					<execution>
+						<id>generate-javadoc</id>
 						<goals>
-							<goal>install</goal>
-						</goals>
-						<configuration>
-							<hooks>
-								<pre-commit>mvn sonar:sonar -Dsonar.host.url=http://localhost:9000 -Dsonar.login=${sonar.token}</pre-commit>
-							</hooks>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.sonarsource.scanner.maven</groupId>
-				<artifactId>sonar-maven-plugin</artifactId>
-				<version>5.1.0.4751</version>
-				<executions>
-					<execution>
-						<id>sonar-analysis</id>
-						<phase>verify</phase>
-						<goals>
-							<goal>sonar</goal>
+							<goal>javadoc</goal>
 						</goals>
 					</execution>
 				</executions>
+				<configuration>
+					<source>23</source>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>
