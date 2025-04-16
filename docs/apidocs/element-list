@@ -1,0 +1,9 @@
+com.sumdu.petrenko.diplom
+com.sumdu.petrenko.diplom.configs
+com.sumdu.petrenko.diplom.controllers
+com.sumdu.petrenko.diplom.controllers.advices
+com.sumdu.petrenko.diplom.dto
+com.sumdu.petrenko.diplom.models
+com.sumdu.petrenko.diplom.repositories
+com.sumdu.petrenko.diplom.services
+com.sumdu.petrenko.diplom.util
