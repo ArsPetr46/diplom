@@ -21,15 +21,15 @@ jobs:
           distribution: 'temurin'
 
       - name: Generate Javadoc
-        run: mvn javadoc:javadoc
+        run: mvn javadoc:javadoc -DoutputDirectory=./docs -DreportOutputDirectory=./docs -DdestDir=.
 
       - name: Create .nojekyll file
         run: |
           # Create .nojekyll file to disable Jekyll processing
-          touch ./documentation/.nojekyll
+          touch ./docs/.nojekyll
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./documentation
+          publish_dir: ./docs
