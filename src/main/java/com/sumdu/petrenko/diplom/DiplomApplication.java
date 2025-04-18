@@ -1,5 +1,7 @@
 package com.sumdu.petrenko.diplom;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -11,6 +13,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  */
 @SpringBootApplication
 public class DiplomApplication {
+	/**
+	 * Логер для головного класу програми.
+	 */
+	private static final Logger logger = LoggerFactory.getLogger(DiplomApplication.class);
 
 	/**
 	 * Головний метод програми.
@@ -18,7 +24,9 @@ public class DiplomApplication {
 	 * @param args аргументи командного рядка
 	 */
 	public static void main(String[] args) {
+		logger.info("Запуск додатка");
 		SpringApplication.run(DiplomApplication.class, args);
+		logger.info("Додаток успішно запущено");
 	}
 
 }

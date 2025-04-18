@@ -9,6 +9,8 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +29,11 @@ import java.util.Optional;
 @RequestMapping("/friendrequests")
 @Tag(name = "FriendRequests", description = "Operations related to friend requests")
 public class FriendRequestController {
+    /**
+     * Логер для контролера дружніх запитів.
+     */
+    private static final Logger logger = LoggerFactory.getLogger(FriendRequestController.class);
+
     /**
      * Сервіс для роботи з дружніми запитами.
      */
@@ -61,8 +68,13 @@ public class FriendRequestController {
     )
     public ResponseEntity<FriendRequest> getFriendRequestById(
             @Parameter(description = "ID of the friend request to be fetched") @PathVariable Long id) {
-        Optional<FriendRequest> friendRequest = friendRequestService.getFriendRequestById(id);
 
+        Optional<FriendRequest> friendRequest = friendRequestService.getFriendRequestById(id);
+        if (friendRequest.isPresent()) {
+            logger.info("Знайдено дружній запит з id {}", id);
+        } else {
+            logger.warn("Не знайдено дружній запит з id {}", id);
+        }
         return friendRequest.map(value -> new ResponseEntity<>(value, HttpStatus.OK))
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
@@ -89,9 +101,11 @@ public class FriendRequestController {
         List<FriendRequest> friendRequests = friendRequestService.getFriendRequestsBySenderId(senderId);
 
         if (friendRequests.isEmpty()) {
+            logger.warn("Не знайдено дружніх запитів з id відправника {}", senderId);
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
+        logger.info("Знайдено дружні запити з id відправника {}", senderId);
         return new ResponseEntity<>(friendRequests, HttpStatus.OK);
     }
 
@@ -117,9 +131,11 @@ public class FriendRequestController {
         List<FriendRequest> friendRequests = friendRequestService.getFriendRequestsByReceiverId(receiverId);
 
         if (friendRequests.isEmpty()) {
+            logger.warn("Не знайдено дружніх запитів з id отримувача {}", receiverId);
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
+        logger.info("Знайдено дружні запити з id отримувача {}", receiverId);
         return new ResponseEntity<>(friendRequests, HttpStatus.OK);
     }
 
@@ -142,6 +158,7 @@ public class FriendRequestController {
     public ResponseEntity<Void> createFriendRequest(@RequestBody FriendRequest friendRequest) {
         friendRequestService.saveFriendRequest(friendRequest);
 
+        logger.info("Створено новий дружній запит з id відправника {} та id отримувача {}", friendRequest.getSender(), friendRequest.getReceiver());
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
@@ -166,10 +183,12 @@ public class FriendRequestController {
         Optional<FriendRequest> friendRequestOptional = friendRequestService.getFriendRequestById(id);
 
         if (friendRequestOptional.isEmpty()) {
+            logger.warn("Не знайдено дружній запит з id {}", id);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
 
         friendRequestService.deleteFriendRequest(id);
+        logger.info("Дружній запит з id {} успішно видалено", id);
         return ResponseEntity.noContent().build();
     }
 }

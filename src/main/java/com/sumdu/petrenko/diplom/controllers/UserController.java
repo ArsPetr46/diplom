@@ -32,6 +32,11 @@ import java.util.Optional;
 @Tag(name = "Users", description = "Operations related to users")
 public class UserController {
     /**
+     * Логер для контролера користувачів.
+     */
+    private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(UserController.class);
+
+    /**
      * Сервіс для роботи з користувачами.
      */
     private final UserService userService;
@@ -65,6 +70,11 @@ public class UserController {
     public ResponseEntity<List<UserDTO>> getAllUsers() {
         Optional<List<UserDTO>> usersListOptional = userService.getAllUsersAsDTO();
 
+        if (usersListOptional.isPresent()) {
+            logger.info("Успішно отримано список користувачів");
+        } else {
+            logger.warn("В базі даних немає користувачів");
+        }
         return usersListOptional.map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
 
@@ -94,6 +104,11 @@ public class UserController {
     public ResponseEntity<UserDTO> getUserById(@Parameter(description = "ID of the user to be fetched") @PathVariable Long id) {
         Optional<UserDTO> userOptional = userService.getUserByIdAsDTO(id);
 
+        if (userOptional.isPresent()) {
+            logger.info("Успішно отримано користувача з id {}", id);
+        } else {
+            logger.warn("Не знайдено користувача з id {}", id);
+        }
         return userOptional.map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
 
@@ -117,6 +132,7 @@ public class UserController {
             }
     )
     public ResponseEntity<User> createUser(@Valid @RequestBody User user) {
+        logger.info("Створення нового користувача з нікнеймом: {}", user.getNickname());
         return ResponseEntity.status(HttpStatus.CREATED).body(userService.saveUser(user));
     }
 
@@ -155,10 +171,13 @@ public class UserController {
                     existingUser.getUserCreationTime()
             );
 
+            userService.deleteUser(existingUser.getId());
             userService.saveUser(updatedUser);
 
+            logger.info("Користувача з id {} успішно оновлено", id);
             return ResponseEntity.ok().build();
         } else {
+            logger.warn("Не знайдено користувача з id {}", id);
             return ResponseEntity.notFound().build();
         }
     }
@@ -183,10 +202,12 @@ public class UserController {
         Optional<UserDTO> userOptional = userService.getUserByIdAsDTO(id);
 
         if (userOptional.isEmpty()) {
+            logger.warn("Не знайдено користувача з id {}", id);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
 
         userService.deleteUser(id);
+        logger.info("Користувача з id {} успішно видалено", id);
         return ResponseEntity.noContent().build();
     }
 }

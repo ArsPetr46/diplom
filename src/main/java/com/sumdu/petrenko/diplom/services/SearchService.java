@@ -17,6 +17,11 @@ import java.util.List;
 @Service
 public class SearchService {
     /**
+     * Логер для сервісу пошуку.
+     */
+    private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(SearchService.class);
+
+    /**
      * Репозиторій для роботи з користувачами.
      */
     private final UserRepository userRepository;
@@ -38,6 +43,7 @@ public class SearchService {
      * @return список користувачів з таким ім'ям
      */
     public List<UserDTO> searchUsersByNickname(String nickname) {
+        logger.info("Пошук користувачів за іменем: {}", nickname);
         return userRepository.findByNicknameContainingIgnoreCase(nickname).stream()
                 .map(this::convertToDTO)
                 .toList();
@@ -50,6 +56,7 @@ public class SearchService {
      * @return об'єкт UserDTO
      */
     private UserDTO convertToDTO(User user) {
+        logger.info("Перетворення користувача в DTO: {}", user);
         return new UserDTO(user.getId(), user.getNickname(), user.getEmail());
     }
 
@@ -62,6 +69,8 @@ public class SearchService {
      */
     public List<UserDTO> searchUsersByMultipleCriteria(String nickname, String email) {
         List<User> users = userRepository.findAll();
+        logger.info("Пошук користувачів за іменем: {} та електронною поштою: {}", nickname, email);
+
         return users.stream()
                 .filter(user -> (nickname == null || user.getNickname().contains(nickname)) &&
                         (email == null || user.getEmail().contains(email)))

@@ -9,6 +9,8 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,6 +28,11 @@ import java.util.List;
 @RequestMapping("/search")
 @Tag(name = "Search", description = "Operations related to searching users")
 public class SearchController {
+    /**
+     * Логер для контролера пошуку.
+     */
+    private static final Logger logger = LoggerFactory.getLogger(SearchController.class);
+
     /**
      * Сервіс для роботи з пошуком користувачів.
      */
@@ -63,9 +70,11 @@ public class SearchController {
         List<UserDTO> users = searchService.searchUsersByNickname(nickname);
 
         if (users.isEmpty()) {
+            logger.info("Не знайдено користувачів за нікнеймом: {}", nickname);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
 
+        logger.info("Знайдено {} користувачів за нікнеймом: {}", users.size(), nickname);
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
 }

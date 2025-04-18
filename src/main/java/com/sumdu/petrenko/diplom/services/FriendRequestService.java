@@ -19,6 +19,11 @@ import java.util.Optional;
 @Service
 public class FriendRequestService {
     /**
+     * Логер для сервісу запитів на дружбу.
+     */
+    private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(FriendRequestService.class);
+
+    /**
      * Репозиторій для роботи з запитами на дружбу.
      */
     private final FriendRequestRepository friendRequestRepository;
@@ -46,6 +51,7 @@ public class FriendRequestService {
      * @return запит на дружбу
      */
     public Optional<FriendRequest> getFriendRequestById(Long id) {
+        logger.info("Отримання запиту на дружбу з id {}", id);
         return friendRequestRepository.findById(id);
     }
 
@@ -56,6 +62,7 @@ public class FriendRequestService {
      * @return список запитів на дружбу
      */
     public List<FriendRequest> getFriendRequestsBySenderId(Long senderId) {
+        logger.info("Отримання всіх запитів на дружбу, відправлених користувачем з id {}", senderId);
         return friendRequestRepository.findBySenderId(senderId);
     }
 
@@ -66,6 +73,7 @@ public class FriendRequestService {
      * @return список запитів на дружбу
      */
     public List<FriendRequest> getFriendRequestsByReceiverId(Long receiverId) {
+        logger.info("Отримання всіх запитів на дружбу, отриманих користувачем з id {}", receiverId);
         return friendRequestRepository.findByReceiverId(receiverId);
     }
 
@@ -76,6 +84,7 @@ public class FriendRequestService {
      * @return збережений запит на дружбу
      */
     public FriendRequest saveFriendRequest(FriendRequest friendRequest) {
+        logger.info("Збереження запиту на дружбу з id {} від користувача з id {}", friendRequest.getId(), friendRequest.getSender().getId());
         return friendRequestRepository.save(friendRequest);
     }
 
@@ -85,6 +94,7 @@ public class FriendRequestService {
      * @param id ід запиту на дружбу
      */
     public void deleteFriendRequest(Long id) {
+        logger.info("Видалення запиту на дружбу з id {}", id);
         friendRequestRepository.deleteById(id);
     }
 
@@ -106,7 +116,9 @@ public class FriendRequestService {
 
             friendshipRepository.save(friendship);
             friendRequestRepository.deleteById(requestId);
+            logger.info("Запит на дружбу з id {} успішно прийнято", requestId);
         } else {
+            logger.warn("Неможливо ть прийняти запит на дружбу: запит не знайдено з id {}", requestId);
             throw new IllegalArgumentException("Friend request not found");
         }
     }
@@ -119,7 +131,9 @@ public class FriendRequestService {
     public void cancelFriendRequest(Long requestId) {
         if (friendRequestRepository.existsById(requestId)) {
             friendRequestRepository.deleteById(requestId);
+            logger.info("Запит на дружбу з id {} успішно відхилено", requestId);
         } else {
+            logger.warn("Неможливо відхилити запит на дружбу: запит не знайдено з id {}", requestId);
             throw new IllegalArgumentException("Friend request not found");
         }
     }
@@ -136,14 +150,18 @@ public class FriendRequestService {
         Optional<FriendRequest> receivedRequest = friendRequestRepository.findBySenderIdAndReceiverId(userId2, userId1);
 
         if (sentRequest.isPresent()) {
+            logger.info("Запит на дружбу з id {} відправлено користувачу з id {}", userId1, userId2);
             return "Pending";
         } else if (receivedRequest.isPresent()) {
+            logger.info("Запит на дружбу з id {} отримано від користувача з id {}", userId2, userId1);
             return "Received";
         } else {
             Optional<Friendship> friendship = friendshipRepository.findByUserIdAndFriendId(userId1, userId2);
             if (friendship.isPresent()) {
+                logger.info("Користувачі з id {} та id {} є друзями", userId1, userId2);
                 return "Friends";
             } else {
+                logger.info("Користувачі з id {} та id {} не є друзями", userId1, userId2);
                 return "Not Friends";
             }
         }

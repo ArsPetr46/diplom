@@ -19,6 +19,11 @@ import java.util.Optional;
 @Service
 public class FriendshipService {
     /**
+     * Логер для сервісу дружб.
+     */
+    private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(FriendshipService.class);
+
+    /**
      * Репозиторій для роботи з дружбами.
      */
     private final FriendshipRepository friendshipRepository;
@@ -46,6 +51,7 @@ public class FriendshipService {
      * @return дружба
      */
     public Optional<Friendship> getFriendshipById(Long id) {
+        logger.info("Отримання дружби з id {}", id);
         return friendshipRepository.findById(id);
     }
 
@@ -56,6 +62,7 @@ public class FriendshipService {
      * @return збережена дружба
      */
     public Friendship saveFriendship(Friendship friendship) {
+        logger.info("Збереження дружби між {} та {}", friendship.getUser().getId(), friendship.getFriend().getId());
         return friendshipRepository.save(friendship);
     }
 
@@ -65,6 +72,7 @@ public class FriendshipService {
      * @param id ід дружби
      */
     public void deleteFriendship(Long id) {
+        logger.info("Видалення дружби з id {}", id);
         friendshipRepository.deleteById(id);
     }
 
@@ -76,6 +84,8 @@ public class FriendshipService {
      */
     public List<UserDTO> getFriendsOfUser(Long userId) {
         List<Friendship> friendships = friendshipRepository.findByUserIdOrFriendId(userId, userId);
+        logger.info("Отримання друзів для користувача з id {}", userId);
+
         return friendships.stream()
                 .map(friendship -> {
                     User friend = friendship.getUser().getId() == userId ? friendship.getFriend() : friendship.getUser();
@@ -107,6 +117,7 @@ public class FriendshipService {
                 .filter(friends2::contains)
                 .toList();
 
+        logger.info("Отримання спільних друзів між користувачами з id {} та {}", userId1, userId2);
         return mutualFriends.stream()
                 .map(userService::convertToDTO)
                 .toList();

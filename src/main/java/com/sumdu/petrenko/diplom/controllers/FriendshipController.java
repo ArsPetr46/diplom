@@ -10,6 +10,8 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,6 +30,11 @@ import java.util.Optional;
 @RequestMapping("/friendships")
 @Tag(name = "Friendships", description = "Operations related to friendships")
 public class FriendshipController {
+    /**
+     * Логер для контролера дружб.
+     */
+    private static final Logger logger = LoggerFactory.getLogger(FriendshipController.class);
+
     /**
      * Сервіс для роботи з дружбами.
      */
@@ -64,6 +71,11 @@ public class FriendshipController {
             @Parameter(description = "ID of the friendship to be fetched") @PathVariable Long id) {
         Optional<Friendship> friendship = friendshipService.getFriendshipById(id);
 
+        if (friendship.isPresent()) {
+            logger.info("Дружбу з ID {} знайдено", id);
+        } else {
+            logger.warn("Дружбу з ID {} не знайдено", id);
+        }
         return friendship.map(value -> new ResponseEntity<>(value, HttpStatus.OK))
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
@@ -90,9 +102,11 @@ public class FriendshipController {
         List<UserDTO> friends = friendshipService.getFriendsOfUser(userId);
 
         if (friends.isEmpty()) {
+            logger.warn("Друзів для користувача з ID {} не знайдено", userId);
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
+        logger.info("Друзів для користувача з ID {} знайдено", userId);
         return new ResponseEntity<>(friends, HttpStatus.OK);
     }
 
@@ -115,6 +129,7 @@ public class FriendshipController {
     public ResponseEntity<Void> createFriendship(@RequestBody Friendship friendship) {
         friendshipService.saveFriendship(friendship);
 
+        logger.info("Дружба між користувачами {} та {} успішно створена", friendship.getUser().getId(), friendship.getFriend().getId());
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
@@ -139,10 +154,12 @@ public class FriendshipController {
         Optional<Friendship> friendshipOptional = friendshipService.getFriendshipById(id);
 
         if (friendshipOptional.isEmpty()) {
+            logger.warn("Дружбу з ID {} не знайдено", id);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
 
         friendshipService.deleteFriendship(id);
+        logger.info("Дружбу з ID {} успішно видалено", id);
         return ResponseEntity.noContent().build();
     }
 }

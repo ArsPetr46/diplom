@@ -18,6 +18,11 @@ import java.util.Optional;
 @Service
 public class UserService {
     /**
+     * Логер для сервісу користувачів.
+     */
+    private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(UserService.class);
+
+    /**
      * Репозиторій для роботи з користувачами.
      */
     private final UserRepository userRepository;
@@ -38,6 +43,7 @@ public class UserService {
      * @return список всіх користувачів
      */
     public List<User> getAllUsers() {
+        logger.info("Отримання всіх користувачів");
         return userRepository.findAll();
     }
 
@@ -48,6 +54,7 @@ public class UserService {
      * @return користувач
      */
     public Optional<User> getUserById(Long id) {
+        logger.info("Отримання користувача з id {}", id);
         return userRepository.findById(id);
     }
 
@@ -58,6 +65,7 @@ public class UserService {
      * @return збережений користувач
      */
     public User saveUser(User user) {
+        logger.info("Збереження користувача з id {}", user.getId());
         return userRepository.save(user);
     }
 
@@ -67,6 +75,7 @@ public class UserService {
      * @param id ід користувача
      */
     public void deleteUser(Long id) {
+        logger.info("Видалення користувача з id {}", id);
         userRepository.deleteById(id);
     }
 
@@ -77,6 +86,7 @@ public class UserService {
      * @return об'єкт UserDTO
      */
     public UserDTO convertToDTO(User user) {
+        logger.info("Перетворення користувача в DTO: {}", user);
         return new UserDTO(user.getId(), user.getNickname(), user.getEmail());
     }
 
@@ -86,6 +96,7 @@ public class UserService {
      * @return список всіх користувачів у вигляді DTO
      */
     public Optional<List<UserDTO>> getAllUsersAsDTO() {
+        logger.info("Отримання всіх користувачів у вигляді DTO");
         return Optional.of(userRepository.findAll().stream()
                 .map(this::convertToDTO)
                 .toList());
@@ -98,6 +109,7 @@ public class UserService {
      * @return користувач у вигляді DTO
      */
     public Optional<UserDTO> getUserByIdAsDTO(Long id) {
+        logger.info("Отримання користувача з id {} у вигляді DTO", id);
         return userRepository.findById(id)
                 .map(this::convertToDTO);
     }
