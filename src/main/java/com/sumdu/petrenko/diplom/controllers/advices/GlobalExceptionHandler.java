@@ -26,16 +26,30 @@ public class GlobalExceptionHandler {
     private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     /**
+     * Коди помилок.
+     */
+    private static final String DATA_INTEGRITY_ERROR = "ERR-1001";
+    private static final String TYPE_MISMATCH_ERROR = "ERR-1002";
+    private static final String ILLEGAL_ARGUMENT_ERROR = "ERR-1003";
+    private static final String CONSTRAINT_VIOLATION_ERROR = "ERR-1004";
+    private static final String GENERAL_ERROR = "ERR-5000";
+
+    /**
      * Обробляє виключення DataIntegrityViolationException.
      *
      * @param ex виключення, що виникло
      * @return відповідь з кодом статусу 409 (CONFLICT) та повідомленням про помилку
      */
     @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity<String> handleDataIntegrityViolationException(DataIntegrityViolationException ex) {
-        logger.error("Порушення цілісності даних: {}", ex.getMessage(), ex);
+    public ResponseEntity<Map<String, String>> handleDataIntegrityViolationException(DataIntegrityViolationException ex) {
+        String errorMessage = "Порушення цілісності даних: " + ex.getMessage();
+        logger.error("{}: {}", DATA_INTEGRITY_ERROR, errorMessage, ex);
 
-        return ResponseEntity.status(HttpStatus.CONFLICT).body("Порушення цілісності даних: " + ex.getMessage());
+        Map<String, String> error = new HashMap<>();
+        error.put("errorCode", DATA_INTEGRITY_ERROR);
+        error.put("error", errorMessage);
+
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
     }
 
     /**
@@ -46,9 +60,11 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<Map<String, String>> handleMethodArgumentTypeMismatch(MethodArgumentTypeMismatchException ex) {
-        logger.error("Помилка конвертації параметра: {}", ex.getMessage(), ex);
+        String errorMessage = "Помилка конвертації параметра: " + ex.getName();
+        logger.error("{}: {}", TYPE_MISMATCH_ERROR, errorMessage, ex);
 
         Map<String, String> error = new HashMap<>();
+        error.put("errorCode", TYPE_MISMATCH_ERROR);
         error.put("error", "Некоректний формат параметра: " + ex.getName());
         error.put("value", String.valueOf(ex.getValue()));
         error.put("required_type", ex.getRequiredType().getSimpleName());
@@ -64,10 +80,12 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<Map<String, String>> handleIllegalArgument(IllegalArgumentException ex) {
-        logger.error("Некоректний аргумент: {}", ex.getMessage(), ex);
+        String errorMessage = "Некоректний аргумент: " + ex.getMessage();
+        logger.error("{}: {}", ILLEGAL_ARGUMENT_ERROR, errorMessage, ex);
 
         Map<String, String> error = new HashMap<>();
-        error.put("error", "Некоректний аргумент: " + ex.getMessage());
+        error.put("errorCode", ILLEGAL_ARGUMENT_ERROR);
+        error.put("error", errorMessage);
 
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
@@ -80,9 +98,11 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<Map<String, String>> handleConstraintViolation(ConstraintViolationException ex) {
-        logger.error("Порушення обмеження: {}", ex.getMessage(), ex);
+        String errorMessage = "Порушення обмеження: " + ex.getMessage();
+        logger.error("{}: {}", CONSTRAINT_VIOLATION_ERROR, errorMessage, ex);
 
         Map<String, String> error = new HashMap<>();
+        error.put("errorCode", CONSTRAINT_VIOLATION_ERROR);
         error.put("error", "Порушення обмеження валідації: " + ex.getMessage());
 
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
@@ -96,9 +116,11 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, String>> handleGenericException(Exception ex) {
-        logger.error("Непередбачена помилка: {}", ex.getMessage(), ex);
+        String errorId = GENERAL_ERROR + "-" + System.currentTimeMillis();
+        logger.error("{}: Непередбачена помилка: {}", errorId, ex.getMessage(), ex);
 
         Map<String, String> error = new HashMap<>();
+        error.put("errorCode", errorId);
         error.put("error", "Внутрішня помилка сервера");
 
         return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
