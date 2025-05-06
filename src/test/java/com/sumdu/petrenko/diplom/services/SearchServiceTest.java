@@ -1,8 +1,9 @@
 package com.sumdu.petrenko.diplom.services;
 
 import com.sumdu.petrenko.diplom.dto.UserDTO;
-import com.sumdu.petrenko.diplom.models.User;
-import com.sumdu.petrenko.diplom.repositories.UserRepository;
+import com.sumdu.petrenko.diplom.microservices.searchservice.services.SearchService;
+import com.sumdu.petrenko.diplom.microservices.users.models.UserEntity;
+import com.sumdu.petrenko.diplom.microservices.users.repositories.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -33,13 +34,13 @@ public class SearchServiceTest {
         String nickname = "john";
         String email = "john@example.com";
 
-        User user = new User(
+        UserEntity userEntity = new UserEntity(
                 nickname,
                 email,
                 "Password1"
         );
 
-        when(userRepository.findAll()).thenReturn(Arrays.asList(user));
+        when(userRepository.findAll()).thenReturn(Arrays.asList(userEntity));
 
         List<UserDTO> users = searchService.searchUsersByMultipleCriteria(nickname, email);
 
@@ -52,13 +53,13 @@ public class SearchServiceTest {
     public void testSearchUsersByMultipleCriteria_NicknameOnly() {
         String nickname = "john";
 
-        User user = new User(
+        UserEntity userEntity = new UserEntity(
                 nickname,
                 "john@example.com",
                 "Password1"
         );
 
-        when(userRepository.findAll()).thenReturn(Arrays.asList(user));
+        when(userRepository.findAll()).thenReturn(Arrays.asList(userEntity));
 
         List<UserDTO> users = searchService.searchUsersByMultipleCriteria(nickname, null);
 
@@ -70,13 +71,13 @@ public class SearchServiceTest {
     public void testSearchUsersByMultipleCriteria_EmailOnly() {
         String email = "john@example.com";
 
-        User user = new User(
+        UserEntity userEntity = new UserEntity(
                 "john",
                 email,
                 "Password1"
         );
 
-        when(userRepository.findAll()).thenReturn(Arrays.asList(user));
+        when(userRepository.findAll()).thenReturn(Arrays.asList(userEntity));
 
         List<UserDTO> users = searchService.searchUsersByMultipleCriteria(null, email);
 
