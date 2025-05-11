@@ -2,13 +2,11 @@ package com.sumdu.petrenko.diplom.microservices.users.models;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.*;
-import jakarta.validation.constraints.Pattern;
+import org.hibernate.validator.constraints.URL;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 /**
  * Модель для представлення користувача.
@@ -30,6 +28,7 @@ public class UserEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Setter(AccessLevel.NONE)
+    @Null(message = "ID користувача потрібно надавати при створенні")
     @Schema(description = "Унікальний ID користувача",
             examples = {"1", "100", "3197"},
             requiredMode = Schema.RequiredMode.AUTO,
@@ -66,9 +65,9 @@ public class UserEntity {
      * Зберігається в зашифрованому вигляді.
      */
     @Column(nullable = false)
-    @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]+$", message = "Пароль повинен складатися з латинських літер і цифр")
-    @Size(min = 8, max = 30, message = "Пароль повинен бути від 8 до 30 символів довжиною")
-    @Schema(description = "Пароль користувача", examples = {"1234Pass", "B1C7D899", "Password123"},
+//    @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]+$", message = "Пароль повинен складатися з латинських літер і цифр")
+//    @Size(min = 8, max = 30, message = "Пароль повинен бути від 8 до 30 символів довжиною")
+    @Schema(description = "Зашифрований пароль користувача",
             requiredMode = Schema.RequiredMode.REQUIRED, accessMode = Schema.AccessMode.WRITE_ONLY)
     private String password;
 
@@ -90,6 +89,7 @@ public class UserEntity {
      * Використовується для вікової верифікації та персоналізації контенту.
      */
     @Column
+    @Past(message = "Дата народження повинна бути в минулому")
     @Schema(description = "Дата народження користувача", example = "2000-01-01",
             requiredMode = Schema.RequiredMode.NOT_REQUIRED, accessMode = Schema.AccessMode.READ_WRITE)
     private LocalDate birthDate;
@@ -100,6 +100,7 @@ public class UserEntity {
      * Має бути валідним URL-посиланням на зображення.
      */
     @Column
+    @URL(message = "URL аватара повинен бути валідним URL-адресою")
     @Schema(description = "URL до фото профілю користувача", example = "https://example.com/avatar.jpg",
             requiredMode = Schema.RequiredMode.NOT_REQUIRED, accessMode = Schema.AccessMode.READ_WRITE)
     private String avatarUrl;

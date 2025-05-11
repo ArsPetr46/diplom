@@ -1,6 +1,8 @@
 package com.sumdu.petrenko.diplom.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -36,6 +38,8 @@ public class UserDTO {
      * Використовується для ідентифікації користувача в системі.
      */
     @Schema(description = "Нікнейм користувача")
+    @Pattern(regexp = "^[a-zA-Z0-9]+$", message = "Нікнейм повинен містити лише латинські літери та цифри")
+    @Size(min = 5, max = 30, message = "Нікнейм повинен бути довше 5 символів та не перевищувати 30 символів")
     private String nickname;
 
     /**
@@ -43,6 +47,7 @@ public class UserDTO {
      * Може бути null, якщо користувач не додав опис.
      */
     @Schema(description = "Текстовий опис користувача")
+    @Size(max = 300, message = "Опис користувача не повинен перевищувати 300 символів")
     private String userDescription;
 
     /**

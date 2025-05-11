@@ -7,6 +7,7 @@ import com.sumdu.petrenko.diplom.microservices.users.repositories.UserRepository
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -51,6 +52,16 @@ public class UserService {
      * </p>
      */
     private final UserMapper userMapper;
+
+    /**
+     * Кодувальник паролів для шифрування паролів користувачів.
+     * <p>
+     * Використовується для безпечного зберігання паролів у базі даних. Забезпечує
+     * функцію хешування паролів перед їх збереженням, а також перевірку паролів
+     * під час аутентифікації користувачів.
+     * </p>
+     */
+    private final PasswordEncoder passwordEncoder;
 
     /**
      * Отримати користувача за його ідентифікатором.
@@ -238,36 +249,6 @@ public class UserService {
     }
 
     /**
-     * Зберегти нового користувача.
-     * <p>
-     * Метод створює нового користувача в системі. Перед збереженням рекомендується
-     * перевірити унікальність email та нікнейму на рівні контролера.
-     * </p>
-     * <p>
-     * Метод виконується в межах транзакції для забезпечення атомарності операції.
-     * </p>
-     *
-     * @param userEntity об'єкт користувача для збереження
-     * @return DTO збереженого користувача з присвоєним ID
-     */
-    @Transactional
-    public UserDTO saveUser(UserEntity userEntity) {
-        try {
-            UserEntity savedUser = userRepository.save(userEntity);
-            UserDTO userDTO = userMapper.toUserDTO(savedUser);
-
-            log.info("Створено нового користувача з ID: {}", savedUser.getId());
-            return userDTO;
-        } catch (DataAccessException e) {
-            log.error("Помилка доступу до БД при збереженні користувача: {}", e.getMessage());
-            throw e;
-        } catch (Exception e) {
-            log.error("Непередбачена помилка при збереженні користувача: {}", e.getMessage());
-            throw e;
-        }
-    }
-
-    /**
      * Оновити існуючого користувача.
      * <p>
      * Метод оновлює дані існуючого користувача. Перевіряє наявність користувача
@@ -299,8 +280,10 @@ public class UserService {
                 existing.setNickname(userDetails.getNickname());
             }
 
-            if (userDetails.getPassword() != null) {
-                existing.setPassword(userDetails.getPassword());
+            if (userDetails.getPassword() != null && !userDetails.getPassword().isEmpty()) {
+                if (!userDetails.getPassword().equals(existing.getPassword())) {
+                    existing.setPassword(passwordEncoder.encode(userDetails.getPassword()));
+                }
             }
 
             existing.setUserDescription(userDetails.getUserDescription());

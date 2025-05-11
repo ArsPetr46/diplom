@@ -1,9 +1,13 @@
 package com.sumdu.petrenko.diplom.microservices.users.repositories;
 
 import com.sumdu.petrenko.diplom.microservices.users.models.UserEntity;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Репозиторій для роботи з користувачами в мікросервісі управління користувачами.
@@ -88,4 +92,24 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
      * @throws IllegalArgumentException якщо nickname є null
      */
     List<UserEntity> findByNicknameContainingIgnoreCase(String nickname);
+
+    /**
+     * Знаходить користувача за його електронною поштою.
+     * <p>
+     * Метод використовується для отримання даних користувача за його електронною поштою.
+     * Якщо користувач з такою електронною поштою не знайдений, повертається null.
+     * </p>
+     * <p>
+     * SQL-еквівалент: {@code SELECT * FROM users WHERE email = ?}
+     * </p>
+     *
+     * @param email електронна пошта користувача (не може бути null)
+     * @return користувач з вказаною електронною поштою або null, якщо не знайдено
+     * @throws org.springframework.dao.DataAccessException при помилках доступу до бази даних
+     * @throws IllegalArgumentException якщо email є null
+     */
+    Optional<UserEntity> findByEmail(@NotBlank(message = "Email не може бути порожнім")
+                           @Email(message = "Email повинен бути валідним")
+                           @Size(max = 255, message = "Email не повинен перевищувати 255 символів")
+                           String email);
 }

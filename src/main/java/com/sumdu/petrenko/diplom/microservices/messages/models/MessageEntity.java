@@ -17,11 +17,11 @@ public class MessageEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "message_id")
-    private final Long messageId;
+    private Long messageId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "chat_id", referencedColumnName = "id", nullable = false)
-    private final ChatEntity chat;
+    private ChatEntity chat;
 
     @Column(name = "sender_id", nullable = false)
     private Long senderId;
